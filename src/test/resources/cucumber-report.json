@@ -1,0 +1,291 @@
+[
+  {
+    "id": "targets",
+    "description": "",
+    "name": "Targets",
+    "keyword": "Feature",
+    "line": 1,
+    "elements": [
+      {
+        "id": "targets;successfull-get-of-targets",
+        "description": "",
+        "name": "successfull GET of targets",
+        "keyword": "Scenario",
+        "line": 3,
+        "steps": [
+          {
+            "result": {
+              "duration": 72479533,
+              "status": "passed"
+            },
+            "name": "target with id 15 exists",
+            "keyword": "Given ",
+            "line": 4,
+            "match": {
+              "arguments": [
+                {
+                  "val": "15",
+                  "offset": 15
+                }
+              ],
+              "location": "Stepdefs.target_with_id_exists(int)"
+            }
+          },
+          {
+            "result": {
+              "duration": 589472,
+              "status": "passed"
+            },
+            "name": "content-type is \"application/vnd.nfon.net+xml\"",
+            "keyword": "Given ",
+            "line": 5,
+            "match": {
+              "arguments": [
+                {
+                  "val": "application/vnd.nfon.net+xml",
+                  "offset": 17
+                }
+              ],
+              "location": "Stepdefs.content_type_is(String)"
+            }
+          },
+          {
+            "result": {
+              "duration": 21793616,
+              "status": "passed"
+            },
+            "name": "GET /targets/15",
+            "keyword": "When ",
+            "line": 6,
+            "match": {
+              "arguments": [
+                {
+                  "val": "/targets/15",
+                  "offset": 4
+                }
+              ],
+              "location": "Stepdefs.get(String)"
+            }
+          },
+          {
+            "result": {
+              "duration": 117411775,
+              "status": "passed"
+            },
+            "name": "response body should be:",
+            "keyword": "Then ",
+            "line": 7,
+            "doc_string": {
+              "value": "    {\"target\": { \"id\": 15,\n                 \"type\": \"phone\",\n                 \"extension\": {\"number\": \"75\"}}\n    }",
+              "line": 8,
+              "content_type": ""
+            },
+            "match": {
+              "location": "Stepdefs.response_body_should_be(String)"
+            }
+          },
+          {
+            "result": {
+              "duration": 1093294,
+              "status": "failed",
+              "error_message": "java.lang.AssertionError: \nExpected: is \u003c200\u003e\n     but: was \u003c201\u003e\n\tat org.hamcrest.MatcherAssert.assertThat(MatcherAssert.java:20)\n\tat org.junit.Assert.assertThat(Assert.java:865)\n\tat org.junit.Assert.assertThat(Assert.java:832)\n\tat test.Stepdefs.status_code_is(Stepdefs.java:50)\n\tat ✽.And response status code should be 200(test/cukes.feature:14)\n"
+            },
+            "name": "response status code should be 200",
+            "keyword": "And ",
+            "line": 14,
+            "match": {
+              "arguments": [
+                {
+                  "val": "200",
+                  "offset": 31
+                }
+              ],
+              "location": "Stepdefs.status_code_is(int)"
+            }
+          },
+          {
+            "result": {
+              "status": "skipped"
+            },
+            "name": "response content-type should be \"application/vnd.nfon.net+xml\"",
+            "keyword": "And ",
+            "line": 15,
+            "match": {
+              "arguments": [
+                {
+                  "val": "application/vnd.nfon.net+xml",
+                  "offset": 33
+                }
+              ],
+              "location": "Stepdefs.Content_type_is(String)"
+            }
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "id": "targets;unsupported-content-type-on-targets",
+        "description": "",
+        "name": "unsupported content-type on targets",
+        "keyword": "Scenario",
+        "line": 17,
+        "steps": [
+          {
+            "result": {
+              "duration": 68452,
+              "status": "passed"
+            },
+            "name": "content-type is \"unsupported-content-type\"",
+            "keyword": "Given ",
+            "line": 18,
+            "match": {
+              "arguments": [
+                {
+                  "val": "unsupported-content-type",
+                  "offset": 17
+                }
+              ],
+              "location": "Stepdefs.content_type_is(String)"
+            }
+          },
+          {
+            "result": {
+              "duration": 131089,
+              "status": "passed"
+            },
+            "name": "GET /targets/15",
+            "keyword": "When ",
+            "line": 19,
+            "match": {
+              "arguments": [
+                {
+                  "val": "/targets/15",
+                  "offset": 4
+                }
+              ],
+              "location": "Stepdefs.get(String)"
+            }
+          },
+          {
+            "result": {
+              "duration": 337967,
+              "status": "passed"
+            },
+            "name": "response body should be:",
+            "keyword": "Then ",
+            "line": 20,
+            "doc_string": {
+              "value": "   {\"status\": 400,\n    \"message\": \"Content-type: \\\"unsupported-content-type\\\" is not supported\"}",
+              "line": 21,
+              "content_type": ""
+            },
+            "match": {
+              "location": "Stepdefs.response_body_should_be(String)"
+            }
+          },
+          {
+            "result": {
+              "duration": 49111,
+              "status": "passed"
+            },
+            "name": "response status code should be 400",
+            "keyword": "And ",
+            "line": 25,
+            "match": {
+              "arguments": [
+                {
+                  "val": "400",
+                  "offset": 31
+                }
+              ],
+              "location": "Stepdefs.status_code_is(int)"
+            }
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "id": "targets;resource-not-found",
+        "description": "",
+        "name": "resource not found",
+        "keyword": "Scenario",
+        "line": 27,
+        "steps": [
+          {
+            "result": {
+              "duration": 60827,
+              "status": "passed"
+            },
+            "name": "content-type is \"application/vnd.nfon.net+xml\"",
+            "keyword": "Given ",
+            "line": 28,
+            "match": {
+              "arguments": [
+                {
+                  "val": "application/vnd.nfon.net+xml",
+                  "offset": 17
+                }
+              ],
+              "location": "Stepdefs.content_type_is(String)"
+            }
+          },
+          {
+            "result": {
+              "duration": 173741,
+              "status": "passed"
+            },
+            "name": "GET /targets/123",
+            "keyword": "When ",
+            "line": 29,
+            "match": {
+              "arguments": [
+                {
+                  "val": "/targets/123",
+                  "offset": 4
+                }
+              ],
+              "location": "Stepdefs.get(String)"
+            }
+          },
+          {
+            "result": {
+              "duration": 44737,
+              "status": "passed"
+            },
+            "name": "response status code should be 404",
+            "keyword": "Then ",
+            "line": 30,
+            "match": {
+              "arguments": [
+                {
+                  "val": "404",
+                  "offset": 31
+                }
+              ],
+              "location": "Stepdefs.status_code_is(int)"
+            }
+          },
+          {
+            "result": {
+              "duration": 213422,
+              "status": "passed"
+            },
+            "name": "response body should be:",
+            "keyword": "And ",
+            "line": 31,
+            "doc_string": {
+              "value": "   {\"status\": 404,\n    \"message\": \"Resource you requested (/targets/123) is not available\"}",
+              "line": 32,
+              "content_type": ""
+            },
+            "match": {
+              "location": "Stepdefs.response_body_should_be(String)"
+            }
+          }
+        ],
+        "type": "scenario"
+      }
+    ],
+    "uri": "test/cukes.feature"
+  }
+]

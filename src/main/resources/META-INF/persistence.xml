@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="databases" transaction-type="RESOURCE_LOCAL">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+		<class>cdi.ABC</class>
+
+
+		<exclude-unlisted-classes>false</exclude-unlisted-classes>
+		<validation-mode>CALLBACK</validation-mode>
+		<properties>
+			<property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.H2Platform"/>
+			<property name="eclipselink.logging.level" value="FINEST" />
+			<property name="eclipselink.logging.level.sql" value="FINEST" />
+			<property name="eclipselink.logging.parameters" value="true" />
+			<property name="eclipselink.logging.logger" value="DefaultLogger" />
+			<property name="eclipselink.logging.session" value="true" />
+			<property name="eclipselink.weaving" value="static" />
+			<property name="eclipselink.profiler" value="PerformanceMonitor" />
+			<property name="eclipselink.cache.shared.default" value="false" />
+			<property name="eclipselink.flush-clear.cache" value="Drop" />
+<!-- 			<property name="eclipselink.composite-unit" value="true" /> -->
+			<property name="eclipselink.jdbc.driver" value="org.h2.Driver" />
+			<property name="eclipselink.jdbc.url" value="jdbc:h2:target/database/~test;MVCC=true" />
+			<property name="eclipselink.jdbc.user" value="sa" />
+			<property name="eclipselink.jdbc.password" value="" />
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+		</properties>
+	</persistence-unit>
+</persistence>
