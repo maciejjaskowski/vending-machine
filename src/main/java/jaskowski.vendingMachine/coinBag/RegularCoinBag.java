@@ -22,7 +22,7 @@ public class RegularCoinBag implements CoinBag {
         coins.add(coin);
 
         if (isEnoughMoney.enough(coins.sum())) {
-            enoughMoneyInserted.fire(coins);
+            enoughMoneyInserted.fire(coins.sum());
         }
     }
 

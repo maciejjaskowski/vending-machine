@@ -25,7 +25,7 @@ public class RegularCoinBagTest {
         coinBag.putCoin(coin5());
 
         //then
-        verify(enoughMoneyInserted).fire(new Coins(coin5()));
+        verify(enoughMoneyInserted).fire(new Money(5));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class RegularCoinBagTest {
         coinBag.putCoin(coin5());
 
         //then
-        verify(enoughMoneyInserted, times(1)).fire(new Coins(coin5(), coin5()));
+        verify(enoughMoneyInserted, times(1)).fire(new Money(10));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class RegularCoinBagTest {
 
         //then
         verify(coinsDispenser).release(new Coins(coin5()));
-        verify(enoughMoneyInserted, times(1)).fire(new Coins(coin5(), coin2()));
+        verify(enoughMoneyInserted, times(1)).fire(new Money(7));
 
     }
 

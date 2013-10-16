@@ -25,7 +25,7 @@ public class Slot {
         return price.isEnough(money);
     }
 
-    public void release(ProductDispenser productDispenser) {
+    public void releaseProduct(ProductDispenser productDispenser) {
         productDispenser.release(products.poll());
     }
 

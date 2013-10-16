@@ -45,7 +45,7 @@ public class SlotTest {
         ProductDispenser productDispenser = mock(ProductDispenser.class);
 
         //when
-        slot.release(productDispenser);
+        slot.releaseProduct(productDispenser);
 
         //then
         verify(productDispenser).release(product);

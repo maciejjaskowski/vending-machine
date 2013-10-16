@@ -1,7 +1,8 @@
 package jaskowski.vendingMachine.coinBag;
 
 import jaskowski.vendingMachine.money.Coins;
+import jaskowski.vendingMachine.money.Money;
 
 public interface EnoughMoneyInserted {
-    void fire(Coins coins);
+    void fire(Money moneyInserted);
 }

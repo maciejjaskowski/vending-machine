@@ -44,6 +44,7 @@ public class VendingMachine {
         }
     }
 
+
     private void onSlotFound(final Slot chosenSlot) {
         if (!chosenSlot.productAvailable()) {
             display.productNotAvailable();
@@ -56,11 +57,17 @@ public class VendingMachine {
             }
         }, new EnoughMoneyInserted() {
             @Override
-            public void fire(Coins coins) {
+            public void fire(Money moneyInserted) {
                 try {
-                    coinsRepository.releaseChange(chosenSlot.overPaid(coins.sum()), coinsDispenser);
-                    coinsRepository.addAll(coins);
-                    chosenSlot.release(productDispenser);
+                    Money moneyToRelease = chosenSlot.overPaid(moneyInserted);
+                    coinsRepository.releaseChange(moneyToRelease, coinsDispenser);
+                    coinBag.releaseCoins(new CoinsDispenser() {
+                        @Override
+                        public void release(Coins coins) {
+                            coinsRepository.addAll(coins);
+                        }
+                    });
+                    chosenSlot.releaseProduct(productDispenser);
                     display.productBought();
                 } catch (ChangeCannotBeReturnedException ignore) {
                     coinBag.releaseCoins(coinsDispenser);
@@ -82,8 +89,8 @@ public class VendingMachine {
     private ImmediatelyReleasingCoinBag createImmediatelyReleasingCoinBag() {
         return new ImmediatelyReleasingCoinBag(new EnoughMoneyInserted() {
             @Override
-            public void fire(Coins coins) {
-                VendingMachine.this.coinsDispenser.release(coins);
+            public void fire(Money moneyInserted) {
+                coinBag.releaseCoins(coinsDispenser);
                 display.chooseProduct();
             }
         });
