@@ -31,7 +31,14 @@ public class Slot {
 
     public Money remainsToPay(Money money) {
 
-        Money difference = price.asMoney().minus(money);
+        return zeroIfLessThenZero(price.asMoney().minus(money));
+    }
+
+    public Money overPaid(Money money) {
+        return zeroIfLessThenZero(money.minus(price.asMoney()));
+    }
+
+    private Money zeroIfLessThenZero(Money difference) {
         if (difference.lessOrEqual(new Money(0))) {
             return new Money(0);
         }

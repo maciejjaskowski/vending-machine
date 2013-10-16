@@ -1,10 +1,12 @@
 package jaskowski.vendingMachine;
 
-import cucumber.api.PendingException;
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import jaskowski.vendingMachine.coinBag.CoinsDispenser;
+import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
+import jaskowski.vendingMachine.coinsRepository.CoinsRepository;
+import jaskowski.vendingMachine.dummyCoinsChanger.DummyCoinsChangerFactory;
 import jaskowski.vendingMachine.money.Coin;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.money.Price;
@@ -20,13 +22,14 @@ public class Stepdefs {
     private final Product product = new Product("Coca cola");
     private final Display display = mock(Display.class);
     private final SlotsRepository slotsRepository = new SlotsRepository();
-    private final VendingMachine vendingMachine = new VendingMachine(display, productDispenser, coinsDispenser, slotsRepository);
+    private final CoinsRepository coinsRepository = new CoinsRepository(new DummyCoinsChangerFactory());
+    private final VendingMachine vendingMachine = new VendingMachine(display, productDispenser, coinsDispenser, coinsRepository, slotsRepository);
 
     @Given("^product with price (\\d+) was chosen$")
     public void product_with_price_was_chosen(int price) throws Throwable {
         final SlotId id = new SlotId("1");
 
-        slotsRepository.put(id, new Slot(new Price(price), product));
+        slotsRepository.put(id, new SlotBuilder().withPrice(price).withProducts(product).build());
 
         vendingMachine.chooseSlot(id);
     }
@@ -53,6 +56,8 @@ public class Stepdefs {
 
     private Coin coin(int value) {
         switch (value) {
+            case 1:
+                return Coin.coin1();
             case 2:
                 return Coin.coin2();
             case 5:
@@ -66,22 +71,28 @@ public class Stepdefs {
         verify(productDispenser, never()).release(any(Product.class));
     }
 
-    @Given("^machine contains coin (\\d+), coin (\\d+)$")
-    public void machine_contains_coin_coin(int arg1, int arg2) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+    @Given("^machine contains coins$")
+    public void machine_contains_coins(DataTable dataTable) throws Throwable {
+        coinsRepository.addAll(asCoins(dataTable));
     }
 
-    @Then("^machine returns coin (\\d+), coin (\\d+)$")
-    public void machine_returns_coin_coin(int arg1, int arg2) throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+    private Coins asCoins(DataTable dataTable) {
+        Coins coins = new Coins();
+        for (String string : dataTable.flatten()) {
+            coins.add(coin(Integer.valueOf(string)));
+        }
+        return coins;
+    }
+
+    @Then("^machine returns coins$")
+    public void machine_returns_coins(DataTable dataTableCoins) throws Throwable {
+        Coins coins = asCoins(dataTableCoins);
+        verify(coinsDispenser).release(coins);
     }
 
     @Given("^machine contains no coins$")
     public void machine_contains_no_coins() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+        // empty body
     }
 
     @Given("^no product chosen$")

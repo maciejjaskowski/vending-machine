@@ -1,24 +1,29 @@
 package jaskowski.vendingMachine;
 
 import jaskowski.vendingMachine.coinBag.*;
+import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
+import jaskowski.vendingMachine.coinsRepository.ChangeCannotBeReturnedException;
+import jaskowski.vendingMachine.coinsRepository.CoinsRepository;
 import jaskowski.vendingMachine.money.Coin;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.money.Money;
 import jaskowski.vendingMachine.slot.*;
 
 public class VendingMachine {
-    private Display display;
+    private final Display display;
     private final ProductDispenser productDispenser;
     private final CoinsDispenser coinsDispenser;
+    private final CoinsRepository coinsRepository;
     private final SlotsRepository slotsRepository;
     private CoinBag coinBag;
 
-    public VendingMachine(Display display, ProductDispenser productDispenser, CoinsDispenser coinsDispenser, SlotsRepository slotsRepository) {
+    public VendingMachine(Display display, ProductDispenser productDispenser, CoinsDispenser coinsDispenser, CoinsRepository coinsRepository, SlotsRepository slotsRepository) {
         this.display = display;
         this.productDispenser = productDispenser;
         this.coinsDispenser = coinsDispenser;
+        this.coinsRepository = coinsRepository;
         this.slotsRepository = slotsRepository;
-        this.coinBag = createAlwaysReleasingCoinBag();
+        this.coinBag = createImmediatelyReleasingCoinBag();
     }
 
     public VendingMachine putCoin(Coin coin) {
@@ -39,27 +44,29 @@ public class VendingMachine {
         }
     }
 
-    private void onSlotFound(final Slot slot) {
-        if (!slot.productAvailable()) {
+    private void onSlotFound(final Slot chosenSlot) {
+        if (!chosenSlot.productAvailable()) {
             display.productNotAvailable();
             return;
         }
-        coinBag = new CoinBag(new IsEnoughMoney() {
-            @Override
-            public boolean enough(Money money) {
-                return slot.remainsToPay(money).equals(new Money(0));
-            }
-
+        coinBag = new RegularCoinBag(new AbstractIsEnoughMoney() {
             @Override
             public Money lacks(Money money) {
-                return slot.remainsToPay(money);
+                return chosenSlot.remainsToPay(money);
             }
         }, new EnoughMoneyInserted() {
             @Override
             public void fire(Coins coins) {
-                slot.release(productDispenser);
-                display.productBought();
-                VendingMachine.this.coinBag = createAlwaysReleasingCoinBag();
+                try {
+                    coinsRepository.releaseChange(chosenSlot.overPaid(coins.sum()), coinsDispenser);
+                    coinsRepository.addAll(coins);
+                    chosenSlot.release(productDispenser);
+                    display.productBought();
+                } catch (ChangeCannotBeReturnedException ignore) {
+                    coinBag.releaseCoins(coinsDispenser);
+                    display.cantChange();
+                }
+                VendingMachine.this.coinBag = createImmediatelyReleasingCoinBag();
             }
         });
         display.remainsToPay(coinBag.remainsToPay());
@@ -72,8 +79,8 @@ public class VendingMachine {
         return this;
     }
 
-    private AlwaysReleasingCoinBag createAlwaysReleasingCoinBag() {
-        return new AlwaysReleasingCoinBag(new EnoughMoneyInserted() {
+    private ImmediatelyReleasingCoinBag createImmediatelyReleasingCoinBag() {
+        return new ImmediatelyReleasingCoinBag(new EnoughMoneyInserted() {
             @Override
             public void fire(Coins coins) {
                 VendingMachine.this.coinsDispenser.release(coins);

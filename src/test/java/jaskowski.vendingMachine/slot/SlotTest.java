@@ -109,6 +109,33 @@ public class SlotTest {
         assertThat(slot.productAvailable()).isFalse();
     }
 
+    @Test
+    public void shouldReturnOverPaidZeroIfNotOverPaid() {
+        //given
+        Slot slot = build(aSlot().withPrice(10));
+
+        //then
+        assertThat(slot.overPaid(new Money(10))).isEqualTo(new Money(0));
+    }
+
+    @Test
+    public void shouldReturnOverPaidZeroIfUnderPaid() {
+        //given
+        Slot slot = build(aSlot().withPrice(15));
+
+        //then
+        assertThat(slot.overPaid(new Money(10))).isEqualTo(new Money(0));
+    }
+
+    @Test
+    public void shouldReturnPositiveOverPaidIfOverPaid() {
+        //given
+        Slot slot = build(aSlot().withPrice(5));
+
+        //then
+        assertThat(slot.overPaid(new Money(10))).isEqualTo(new Money(5));
+    }
+
     private Slot build(SlotBuilder slotBuilder) {
         return slotBuilder.build();
     }

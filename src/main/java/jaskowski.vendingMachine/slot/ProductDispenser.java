@@ -1,12 +1,7 @@
 package jaskowski.vendingMachine.slot;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+public interface ProductDispenser {
 
-public class ProductDispenser {
+    void release(Product product);
 
-
-    public void release(Product product) {
-
-    }
 }

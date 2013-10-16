@@ -1,4 +1,4 @@
-package jaskowski.vendingMachine.coinBag;
+package jaskowski.vendingMachine.coinsDispenser;
 
 import jaskowski.vendingMachine.money.Coins;
 

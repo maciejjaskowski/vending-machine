@@ -1,7 +1,8 @@
 package jaskowski.vendingMachine;
 
 import jaskowski.vendingMachine.coinBag.CoinBag;
-import jaskowski.vendingMachine.coinBag.CoinsDispenser;
+import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
+import jaskowski.vendingMachine.coinsRepository.CoinsRepository;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.slot.*;
 import org.junit.Before;
@@ -30,12 +31,14 @@ public class VendingMachineTest {
     private CoinsDispenser coinsDispenser;
     @Mock
     private Display display;
+    @Mock
+    private CoinsRepository coinsRepository;
 
     private VendingMachine vendingMachine;
 
     @Before
     public void setUp() {
-        vendingMachine = new VendingMachine(display, productDispenser, coinsDispenser, slotsRepository);
+        vendingMachine = new VendingMachine(display, productDispenser, coinsDispenser, coinsRepository, slotsRepository);
     }
 
     @Test

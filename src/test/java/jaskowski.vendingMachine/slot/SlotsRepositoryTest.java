@@ -13,7 +13,7 @@ public class SlotsRepositoryTest {
     @Test
     public void shouldCreateSlot() throws Exception {
         //given
-        Slot aSlot = aSlot();
+        Slot aSlot = build(aSlot());
         SlotId id = anId();
 
         //when
@@ -28,7 +28,7 @@ public class SlotsRepositoryTest {
         //given
         SlotId id = anId();
         givenSomeSlotUnder(id);
-        Slot aSlot = aSlot();
+        Slot aSlot = build(aSlot());
 
         //when
         slotsRepository.put(id, aSlot);
@@ -46,8 +46,12 @@ public class SlotsRepositoryTest {
         slotsRepository.find(id);
     }
 
+    private static Slot build(SlotBuilder slotBuilder) {
+        return slotBuilder.build();
+    }
+
     private void givenSomeSlotUnder(SlotId id) {
-        slotsRepository.put(id, aSlot());
+        slotsRepository.put(id, build(aSlot()));
     }
 
     private int uniqueId = 1;
@@ -55,7 +59,7 @@ public class SlotsRepositoryTest {
         return new SlotId("" + uniqueId++);
     }
 
-    private Slot aSlot() {
-        return new Slot(new Price(15));
+    private SlotBuilder aSlot() {
+        return new SlotBuilder().withPrice(15);
     }
 }

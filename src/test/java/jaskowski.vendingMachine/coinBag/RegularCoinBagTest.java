@@ -1,5 +1,6 @@
 package jaskowski.vendingMachine.coinBag;
 
+import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.money.Money;
 import jaskowski.vendingMachine.money.Price;
@@ -12,13 +13,13 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class CoinBagTest {
+public class RegularCoinBagTest {
 
     @Test
     public void shouldReleaseCoinsAsSoonAsEnoughMoneyIsPut() {
         //given
         EnoughMoneyInserted enoughMoneyInserted = mock(EnoughMoneyInserted.class);
-        CoinBag coinBag = new CoinBag(isEnoughMoney(true), enoughMoneyInserted);
+        CoinBag coinBag = new RegularCoinBag(isEnoughMoney(true), enoughMoneyInserted);
 
         //when
         coinBag.putCoin(coin5());
@@ -31,7 +32,7 @@ public class CoinBagTest {
     public void shouldReleaseCoinsNotSoonerThenWhenEnoughMoneyIsPut() {
         //given
         EnoughMoneyInserted enoughMoneyInserted = mock(EnoughMoneyInserted.class);
-        CoinBag coinBag = new CoinBag(isEnoughMoney(false, true), enoughMoneyInserted);
+        CoinBag coinBag = new RegularCoinBag(isEnoughMoney(false, true), enoughMoneyInserted);
 
         //when
         coinBag.putCoin(coin5());
@@ -45,7 +46,7 @@ public class CoinBagTest {
     public void shouldReleaseMoney() {
         //given
         EnoughMoneyInserted enoughMoneyInserted = mock(EnoughMoneyInserted.class);
-        CoinBag coinBag = new CoinBag(isEnoughMoney(false, false, true), enoughMoneyInserted);
+        CoinBag coinBag = new RegularCoinBag(isEnoughMoney(false, false, true), enoughMoneyInserted);
         CoinsDispenser coinsDispenser = mock(CoinsDispenser.class);
 
         //when
@@ -61,10 +62,12 @@ public class CoinBagTest {
     }
 
     @Test
-    public void shouldSomeMoneyRemainToBePayed() {
+    public void shouldSomeMoneyRemainToBePaid() {
         //given
         EnoughMoneyInserted enoughMoneyInserted = mock(EnoughMoneyInserted.class);
-        CoinBag coinBag = new CoinBag(isEnoughMoney(false, false, true), enoughMoneyInserted);
+        IsEnoughMoney enoughMoney = isEnoughMoney(false, false, true);
+        CoinBag coinBag = new RegularCoinBag(enoughMoney, enoughMoneyInserted);
+        when(enoughMoney.lacks(new Money(0))).thenReturn(new Money(5));
 
         //when
         Price price = coinBag.remainsToPay();
@@ -80,6 +83,7 @@ public class CoinBagTest {
         for (boolean value : values) {
             stubbing = stubbing.thenReturn(value);
         }
+
         return isEnoughMoney;
     }
 }

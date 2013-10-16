@@ -1,7 +1,8 @@
 package jaskowski.vendingMachine.money;
 
-public class Coin {
+public class Coin implements Comparable<Coin> {
 
+    private static Coin coin1 = new Coin(1);
     private static Coin coin2 = new Coin(2);
     private static Coin coin5 = new Coin(5);
     private final int value;
@@ -18,8 +19,24 @@ public class Coin {
         return coin2;
     }
 
+    public static Coin coin1() {
+        return coin1;
+    }
+
     public Money asMoney() {
         return new Money(value);
+    }
+
+    @Override
+    public int compareTo(Coin o) {
+        if (value < o.value) {
+            return -1;
+        }
+        if (value > o.value) {
+            return 1;
+        }
+        return 0;
+
     }
 
     @Override
@@ -43,5 +60,6 @@ public class Coin {
     public String toString() {
         return "Coin{" + value + '}';
     }
+
 
 }

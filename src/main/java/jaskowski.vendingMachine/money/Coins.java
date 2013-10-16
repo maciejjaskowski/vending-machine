@@ -1,26 +1,38 @@
 package jaskowski.vendingMachine.money;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import com.google.common.collect.Lists;
 
+import java.util.*;
+
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 
 public class Coins implements Iterable<Coin> {
 
-    private Collection<Coin> coins;
+    private List<Coin> coins;
 
     public Coins(Collection<Coin> coins) {
         this.coins = new ArrayList<Coin>(coins);
+        Collections.sort(this.coins);
     }
 
     public Coins(Coin ...coins) {
         this(asList(coins));
     }
 
+    public Coins(Coins coins) {
+        this(newArrayList(coins));
+    }
+
     public void add(Coin coin) {
         coins.add(coin);
+        Collections.sort(coins);
+    }
+
+    public void addAll(Coins coins) {
+        this.coins.addAll(newArrayList(coins));
+        Collections.sort(this.coins);
     }
 
     public Iterator<Coin> iterator() {

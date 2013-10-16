@@ -6,4 +6,5 @@ public class Given {
     public static GivenSlotsRepository given(SlotsRepository slotsRepository) {
         return new GivenSlotsRepository(slotsRepository);
     }
+
 }
