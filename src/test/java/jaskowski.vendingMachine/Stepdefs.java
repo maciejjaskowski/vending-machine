@@ -6,7 +6,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
 import jaskowski.vendingMachine.coinsStorage.CoinsStorage;
-import jaskowski.vendingMachine.dummyCoinsChanger.DummyCoinsChangerFactory;
+import jaskowski.vendingMachine.greedyCoinsChanger.GreedyCoinsChangerFactory;
 import jaskowski.vendingMachine.money.Coin;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.money.Price;
@@ -22,7 +22,7 @@ public class Stepdefs {
     private final Product product = new Product("Coca cola");
     private final Display display = mock(Display.class);
     private final SlotsStorage slotsStorage = new SlotsStorage();
-    private final CoinsStorage coinsStorage = new CoinsStorage(new DummyCoinsChangerFactory());
+    private final CoinsStorage coinsStorage = new CoinsStorage(new GreedyCoinsChangerFactory());
     private final VendingMachine vendingMachine = new VendingMachine(display, productDispenser, coinsDispenser, coinsStorage, slotsStorage);
 
     @Given("^product with price (\\d+) was chosen$")

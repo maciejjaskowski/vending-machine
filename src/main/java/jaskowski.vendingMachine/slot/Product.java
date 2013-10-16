@@ -31,4 +31,8 @@ public class Product {
                 "name='" + name + '\'' +
                 '}';
     }
+
+    public void accept(SlotVisitor slotVisitor) {
+        slotVisitor.visitProduct(name);
+    }
 }

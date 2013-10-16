@@ -23,4 +23,17 @@ public class SlotId {
     public int hashCode() {
         return id.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "SlotId{'" + id + '\'' + '}';
+    }
+
+    public String asString() {
+        return id;
+    }
+
+    public void accept(SlotVisitor slotVisitor) {
+        slotVisitor.visitSlotId(id);
+    }
 }

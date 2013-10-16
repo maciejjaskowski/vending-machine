@@ -1,88 +1,98 @@
 package jaskowski.vendingMachine.coinBag;
 
+import jaskowski.vendingMachine.Display;
 import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.money.Money;
 import jaskowski.vendingMachine.money.Price;
 import org.junit.Test;
-import org.mockito.stubbing.OngoingStubbing;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static jaskowski.vendingMachine.money.Coin.coin2;
 import static jaskowski.vendingMachine.money.Coin.coin5;
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class RegularCoinBagTest {
+
+    @Mock
+    private Display display;
+    @Mock
+    private EnoughMoneyInserted enoughMoneyInserted;
+    @Mock
+    private CoinsDispenser coinsDispenser;
 
     @Test
     public void shouldReleaseCoinsAsSoonAsEnoughMoneyIsPut() {
         //given
-        EnoughMoneyInserted enoughMoneyInserted = mock(EnoughMoneyInserted.class);
-        CoinBag coinBag = new RegularCoinBag(isEnoughMoney(true), enoughMoneyInserted);
+        CoinBag coinBag = new RegularCoinBag(display, transaction(isEnoughMoney(5), enoughMoneyInserted));
 
         //when
         coinBag.putCoin(coin5());
 
         //then
         verify(enoughMoneyInserted).fire(new Money(5));
+        verify(display).remainsToPay(new Price(0));
     }
 
     @Test
     public void shouldReleaseCoinsNotSoonerThenWhenEnoughMoneyIsPut() {
         //given
-        EnoughMoneyInserted enoughMoneyInserted = mock(EnoughMoneyInserted.class);
-        CoinBag coinBag = new RegularCoinBag(isEnoughMoney(false, true), enoughMoneyInserted);
+        CoinBag coinBag = new RegularCoinBag(display, transaction(isEnoughMoney(10), enoughMoneyInserted));
 
         //when
         coinBag.putCoin(coin5());
         coinBag.putCoin(coin5());
 
         //then
-        verify(enoughMoneyInserted, times(1)).fire(new Money(10));
+        InOrder inOrder = inOrder(enoughMoneyInserted, display);
+        inOrder.verify(display).remainsToPay(new Price(10));
+        inOrder.verify(display).remainsToPay(new Price(5));
+        inOrder.verify(display).remainsToPay(new Price(0));
+        inOrder.verify(enoughMoneyInserted, times(1)).fire(new Money(10));
     }
 
     @Test
     public void shouldReleaseMoney() {
         //given
-        EnoughMoneyInserted enoughMoneyInserted = mock(EnoughMoneyInserted.class);
-        CoinBag coinBag = new RegularCoinBag(isEnoughMoney(false, false, true), enoughMoneyInserted);
-        CoinsDispenser coinsDispenser = mock(CoinsDispenser.class);
+        CoinBag coinBag = new RegularCoinBag(display, transaction(isEnoughMoney(7), enoughMoneyInserted));
+
 
         //when
         coinBag.putCoin(coin5());
         coinBag.releaseCoins(coinsDispenser);
-        coinBag.putCoin(coin5());
+
         coinBag.putCoin(coin2());
+        coinBag.putCoin(coin5());
 
         //then
-        verify(coinsDispenser).release(new Coins(coin5()));
-        verify(enoughMoneyInserted, times(1)).fire(new Money(7));
+
+
+        InOrder inOrder = inOrder(coinsDispenser, enoughMoneyInserted, display);
+        inOrder.verify(display).remainsToPay(new Price(7));
+        inOrder.verify(display).remainsToPay(new Price(2));
+        inOrder.verify(coinsDispenser).release(new Coins(coin5()));
+
+        inOrder.verify(display).remainsToPay(new Price(5));
+        inOrder.verify(display).remainsToPay(new Price(0));
+        inOrder.verify(enoughMoneyInserted).fire(new Money(7));
 
     }
 
-    @Test
-    public void shouldSomeMoneyRemainToBePaid() {
-        //given
-        EnoughMoneyInserted enoughMoneyInserted = mock(EnoughMoneyInserted.class);
-        IsEnoughMoney enoughMoney = isEnoughMoney(false, false, true);
-        CoinBag coinBag = new RegularCoinBag(enoughMoney, enoughMoneyInserted);
-        when(enoughMoney.lacks(new Money(0))).thenReturn(new Money(5));
-
-        //when
-        Price price = coinBag.remainsToPay();
-
-        //then
-        assertThat(price).isEqualTo(new Price(5))      ;
+    private Transaction transaction(final IsEnoughMoney isEnoughMoney, final EnoughMoneyInserted enoughMoneyInserted) {
+        return new Transaction(isEnoughMoney, enoughMoneyInserted);
     }
 
-
-    private IsEnoughMoney isEnoughMoney(final boolean ...values) {
-        IsEnoughMoney isEnoughMoney = mock(IsEnoughMoney.class);
-        OngoingStubbing<Boolean> stubbing = when(isEnoughMoney.enough(any(Money.class)));
-        for (boolean value : values) {
-            stubbing = stubbing.thenReturn(value);
-        }
+    private IsEnoughMoney isEnoughMoney(final int value) {
+        IsEnoughMoney isEnoughMoney = new AbstractIsEnoughMoney() {
+            @Override
+            public Money lacks(Money sum) {
+                return new Money(value).minus(sum);
+            }
+        };
 
         return isEnoughMoney;
     }

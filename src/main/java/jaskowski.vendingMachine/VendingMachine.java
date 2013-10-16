@@ -4,6 +4,7 @@ import jaskowski.vendingMachine.coinBag.*;
 import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
 import jaskowski.vendingMachine.coinsStorage.ChangeCannotBeReturnedException;
 import jaskowski.vendingMachine.coinsStorage.CoinsStorage;
+import jaskowski.vendingMachine.coinsStorage.CoinsStorageVisitor;
 import jaskowski.vendingMachine.money.Coin;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.money.Money;
@@ -28,7 +29,6 @@ public class VendingMachine {
 
     public VendingMachine putCoin(Coin coin) {
         coinBag.putCoin(coin);
-        display.remainsToPay(coinBag.remainsToPay());
 
         return this;
     }
@@ -50,10 +50,11 @@ public class VendingMachine {
             display.productNotAvailable();
             return;
         }
-        coinBag = new RegularCoinBag(new AbstractIsEnoughMoney() {
+        coinBag = new RegularCoinBag(display, new Transaction(
+                new AbstractIsEnoughMoney() {
             @Override
             public Money lacks(Money money) {
-                return chosenSlot.remainsToPay(money);
+                return chosenSlot.howMuchMoreShouldBePaidThen(money);
             }
         }, new EnoughMoneyInserted() {
             @Override
@@ -75,8 +76,7 @@ public class VendingMachine {
                 }
                 VendingMachine.this.coinBag = createImmediatelyReleasingCoinBag();
             }
-        });
-        display.remainsToPay(coinBag.remainsToPay());
+        }));
     }
 
     public VendingMachine cancel() {
@@ -95,4 +95,13 @@ public class VendingMachine {
             }
         });
     }
+
+    public void accept(SlotVisitor slotVisitor) {
+        slotsStorage.accept(slotVisitor);
+    }
+
+    public String accept(CoinsStorageVisitor coinsStorageVisitor) {
+        return coinsStorage.accept(coinsStorageVisitor);
+    }
+
 }

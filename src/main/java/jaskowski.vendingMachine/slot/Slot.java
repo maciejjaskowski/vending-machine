@@ -29,8 +29,7 @@ public class Slot {
         productDispenser.release(products.poll());
     }
 
-    public Money remainsToPay(Money money) {
-
+    public Money howMuchMoreShouldBePaidThen(Money money) {
         return zeroIfLessThenZero(price.asMoney().minus(money));
     }
 
@@ -47,5 +46,15 @@ public class Slot {
 
     public boolean productAvailable() {
         return ! products.isEmpty();
+    }
+
+    public void accept(SlotVisitor visitor) {
+        Product peek = products.peek();
+        visitor.visitSlotPrice(price);
+        if (peek == null) {
+            visitor.visitEmptySlot();
+            return;
+        }
+        peek.accept(visitor);
     }
 }

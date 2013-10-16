@@ -1,8 +1,9 @@
 package jaskowski.vendingMachine;
 
+import jaskowski.vendingMachine.coinBag.RemainsToPayDisplay;
 import jaskowski.vendingMachine.money.Price;
 
-public interface Display {
+public interface Display extends RemainsToPayDisplay {
     void productNotAvailable();
 
     void remainsToPay(Price price);

@@ -58,7 +58,7 @@ public class SlotTest {
         Slot slot = build(aSlot().withPrice(15));
 
         //when
-        Money money = slot.remainsToPay(new Money(10));
+        Money money = slot.howMuchMoreShouldBePaidThen(new Money(10));
 
         //then
         assertThat(money).isEqualTo(new Money(5));
@@ -71,7 +71,7 @@ public class SlotTest {
         Slot slot = build(aSlot().withPrice(15));
 
         //when
-        Money money = slot.remainsToPay(new Money(15));
+        Money money = slot.howMuchMoreShouldBePaidThen(new Money(15));
 
         //then
         assertThat(money).isEqualTo(new Money(0));
@@ -83,7 +83,7 @@ public class SlotTest {
         Slot slot = build(aSlot().withPrice(15));
 
         //when
-        Money money = slot.remainsToPay(new Money(29));
+        Money money = slot.howMuchMoreShouldBePaidThen(new Money(29));
 
         //then
         Assertions.assertThat(money).isEqualTo(new Money(0));
@@ -102,8 +102,7 @@ public class SlotTest {
     @Test
     public void shouldProductBeNotAvailable() {
         //given
-        Product product = aProduct();
-        Slot slot = build(aSlot());
+        Slot slot = build(aSlot().withProducts());
 
         //then
         assertThat(slot.productAvailable()).isFalse();
@@ -135,6 +134,7 @@ public class SlotTest {
         //then
         assertThat(slot.overPaid(new Money(10))).isEqualTo(new Money(5));
     }
+
 
     private Slot build(SlotBuilder slotBuilder) {
         return slotBuilder.build();

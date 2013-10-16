@@ -1,10 +1,18 @@
 package jaskowski.vendingMachine.coinBag;
 
 import jaskowski.vendingMachine.money.Money;
+import jaskowski.vendingMachine.money.Price;
 
 public class ImmediatelyReleasingCoinBag extends RegularCoinBag {
     public ImmediatelyReleasingCoinBag(EnoughMoneyInserted enoughMoneyInserted) {
-        super(alwaysEnoughMoney(), enoughMoneyInserted);
+        super(fakeDisplay(), new Transaction(alwaysEnoughMoney(), enoughMoneyInserted));
+    }
+
+    private static RemainsToPayDisplay fakeDisplay() {
+        return new RemainsToPayDisplay() {
+            @Override
+            public void remainsToPay(Price price) {}
+        };
     }
 
     private static IsEnoughMoney alwaysEnoughMoney() {
