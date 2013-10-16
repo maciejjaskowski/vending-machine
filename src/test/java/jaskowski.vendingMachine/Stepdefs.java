@@ -5,7 +5,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
-import jaskowski.vendingMachine.coinsRepository.CoinsRepository;
+import jaskowski.vendingMachine.coinsStorage.CoinsStorage;
 import jaskowski.vendingMachine.dummyCoinsChanger.DummyCoinsChangerFactory;
 import jaskowski.vendingMachine.money.Coin;
 import jaskowski.vendingMachine.money.Coins;
@@ -21,15 +21,15 @@ public class Stepdefs {
     private final CoinsDispenser coinsDispenser = mock(CoinsDispenser.class);
     private final Product product = new Product("Coca cola");
     private final Display display = mock(Display.class);
-    private final SlotsRepository slotsRepository = new SlotsRepository();
-    private final CoinsRepository coinsRepository = new CoinsRepository(new DummyCoinsChangerFactory());
-    private final VendingMachine vendingMachine = new VendingMachine(display, productDispenser, coinsDispenser, coinsRepository, slotsRepository);
+    private final SlotsStorage slotsStorage = new SlotsStorage();
+    private final CoinsStorage coinsStorage = new CoinsStorage(new DummyCoinsChangerFactory());
+    private final VendingMachine vendingMachine = new VendingMachine(display, productDispenser, coinsDispenser, coinsStorage, slotsStorage);
 
     @Given("^product with price (\\d+) was chosen$")
     public void product_with_price_was_chosen(int price) throws Throwable {
         final SlotId id = new SlotId("1");
 
-        slotsRepository.put(id, new SlotBuilder().withPrice(price).withProducts(product).build());
+        slotsStorage.put(id, new SlotBuilder().withPrice(price).withProducts(product).build());
 
         vendingMachine.chooseSlot(id);
     }
@@ -73,7 +73,7 @@ public class Stepdefs {
 
     @Given("^machine contains coins$")
     public void machine_contains_coins(DataTable dataTable) throws Throwable {
-        coinsRepository.addAll(asCoins(dataTable));
+        coinsStorage.addAll(asCoins(dataTable));
     }
 
     private Coins asCoins(DataTable dataTable) {
@@ -104,7 +104,7 @@ public class Stepdefs {
     public void empty_slot_chosen() throws Throwable {
         final SlotId id = new SlotId("1");
 
-        slotsRepository.put(id, new Slot(new Price(15)));
+        slotsStorage.put(id, new Slot(new Price(15)));
 
         vendingMachine.chooseSlot(id);
     }

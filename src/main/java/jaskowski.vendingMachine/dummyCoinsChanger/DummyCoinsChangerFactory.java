@@ -1,7 +1,7 @@
 package jaskowski.vendingMachine.dummyCoinsChanger;
 
-import jaskowski.vendingMachine.coinsRepository.CoinsChanger;
-import jaskowski.vendingMachine.coinsRepository.CoinsChangerFactory;
+import jaskowski.vendingMachine.coinsStorage.CoinsChanger;
+import jaskowski.vendingMachine.coinsStorage.CoinsChangerFactory;
 import jaskowski.vendingMachine.money.Coins;
 
 public class DummyCoinsChangerFactory implements CoinsChangerFactory {

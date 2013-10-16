@@ -1,7 +1,7 @@
 package jaskowski.vendingMachine.dummyCoinsChanger;
 
-import jaskowski.vendingMachine.coinsRepository.ChangeCannotBeReturnedException;
-import jaskowski.vendingMachine.coinsRepository.CoinsChanger;
+import jaskowski.vendingMachine.coinsStorage.ChangeCannotBeReturnedException;
+import jaskowski.vendingMachine.coinsStorage.CoinsChanger;
 import jaskowski.vendingMachine.money.Coin;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.money.Money;

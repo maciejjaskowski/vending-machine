@@ -1,8 +1,6 @@
 package jaskowski.vendingMachine.money;
 
 
-import com.google.common.collect.Lists;
-
 import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;

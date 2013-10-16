@@ -2,7 +2,7 @@ package jaskowski.vendingMachine;
 
 import jaskowski.vendingMachine.coinBag.CoinBag;
 import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
-import jaskowski.vendingMachine.coinsRepository.CoinsRepository;
+import jaskowski.vendingMachine.coinsStorage.CoinsStorage;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.slot.*;
 import org.junit.Before;
@@ -24,7 +24,7 @@ public class VendingMachineTest {
     @Mock
     private ProductDispenser productDispenser;
     @Mock
-    private SlotsRepository slotsRepository;
+    private SlotsStorage slotsStorage;
     @Mock
     private CoinBag coinBag;
     @Mock
@@ -32,13 +32,13 @@ public class VendingMachineTest {
     @Mock
     private Display display;
     @Mock
-    private CoinsRepository coinsRepository;
+    private CoinsStorage coinsStorage;
 
     private VendingMachine vendingMachine;
 
     @Before
     public void setUp() {
-        vendingMachine = new VendingMachine(display, productDispenser, coinsDispenser, coinsRepository, slotsRepository);
+        vendingMachine = new VendingMachine(display, productDispenser, coinsDispenser, coinsStorage, slotsStorage);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class VendingMachineTest {
         SlotId id = anId();
         Product product = aProduct();
         Slot slot = build(aSlot().withPrice(5).withProducts(product));
-        given(slotsRepository).contains(id, slot);
+        given(slotsStorage).contains(id, slot);
         givenChosenSlot(id);
 
         //when
@@ -74,7 +74,7 @@ public class VendingMachineTest {
         SlotId id = anId();
         Product product = aProduct();
         Slot slot = build(aSlot().withPrice(10).withProducts(product));
-        given(slotsRepository).contains(id, slot);
+        given(slotsStorage).contains(id, slot);
         givenChosenSlot(id);
 
         //when
@@ -115,7 +115,7 @@ public class VendingMachineTest {
         SlotId id = anId();
         Product product = aProduct();
         Slot slot = build(aSlot().withPrice(5).withProducts(product));
-        given(slotsRepository).contains(id, slot);
+        given(slotsStorage).contains(id, slot);
         givenChosenSlot(id);
 
         vendingMachine.putCoin(coin5());

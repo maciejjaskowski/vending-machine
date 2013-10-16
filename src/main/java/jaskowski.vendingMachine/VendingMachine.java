@@ -2,8 +2,8 @@ package jaskowski.vendingMachine;
 
 import jaskowski.vendingMachine.coinBag.*;
 import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
-import jaskowski.vendingMachine.coinsRepository.ChangeCannotBeReturnedException;
-import jaskowski.vendingMachine.coinsRepository.CoinsRepository;
+import jaskowski.vendingMachine.coinsStorage.ChangeCannotBeReturnedException;
+import jaskowski.vendingMachine.coinsStorage.CoinsStorage;
 import jaskowski.vendingMachine.money.Coin;
 import jaskowski.vendingMachine.money.Coins;
 import jaskowski.vendingMachine.money.Money;
@@ -13,16 +13,16 @@ public class VendingMachine {
     private final Display display;
     private final ProductDispenser productDispenser;
     private final CoinsDispenser coinsDispenser;
-    private final CoinsRepository coinsRepository;
-    private final SlotsRepository slotsRepository;
+    private final CoinsStorage coinsStorage;
+    private final SlotsStorage slotsStorage;
     private CoinBag coinBag;
 
-    public VendingMachine(Display display, ProductDispenser productDispenser, CoinsDispenser coinsDispenser, CoinsRepository coinsRepository, SlotsRepository slotsRepository) {
+    public VendingMachine(Display display, ProductDispenser productDispenser, CoinsDispenser coinsDispenser, CoinsStorage coinsStorage, SlotsStorage slotsStorage) {
         this.display = display;
         this.productDispenser = productDispenser;
         this.coinsDispenser = coinsDispenser;
-        this.coinsRepository = coinsRepository;
-        this.slotsRepository = slotsRepository;
+        this.coinsStorage = coinsStorage;
+        this.slotsStorage = slotsStorage;
         this.coinBag = createImmediatelyReleasingCoinBag();
     }
 
@@ -35,7 +35,7 @@ public class VendingMachine {
 
     public VendingMachine chooseSlot(SlotId slotId) {
         try {
-            onSlotFound(slotsRepository.find(slotId));
+            onSlotFound(slotsStorage.find(slotId));
         } catch (SlotDoesNotExistException ignore) {
             //but onSlotFound is not invoked!
             display.invalidSlotChosen();
@@ -60,11 +60,11 @@ public class VendingMachine {
             public void fire(Money moneyInserted) {
                 try {
                     Money moneyToRelease = chosenSlot.overPaid(moneyInserted);
-                    coinsRepository.releaseChange(moneyToRelease, coinsDispenser);
+                    coinsStorage.releaseChange(moneyToRelease, coinsDispenser);
                     coinBag.releaseCoins(new CoinsDispenser() {
                         @Override
                         public void release(Coins coins) {
-                            coinsRepository.addAll(coins);
+                            coinsStorage.addAll(coins);
                         }
                     });
                     chosenSlot.releaseProduct(productDispenser);

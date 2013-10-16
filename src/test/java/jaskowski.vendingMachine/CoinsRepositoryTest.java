@@ -1,8 +1,8 @@
 package jaskowski.vendingMachine;
 
 import jaskowski.vendingMachine.coinsDispenser.CoinsDispenser;
-import jaskowski.vendingMachine.coinsRepository.ChangeCannotBeReturnedException;
-import jaskowski.vendingMachine.coinsRepository.CoinsRepository;
+import jaskowski.vendingMachine.coinsStorage.ChangeCannotBeReturnedException;
+import jaskowski.vendingMachine.coinsStorage.CoinsStorage;
 import jaskowski.vendingMachine.dummyCoinsChanger.DummyCoinsChangerFactory;
 import jaskowski.vendingMachine.money.Coin;
 import jaskowski.vendingMachine.money.Coins;
@@ -24,22 +24,22 @@ public class CoinsRepositoryTest {
 
     @Mock
     private CoinsDispenser coinsDispenser;
-    private CoinsRepository coinsRepository = new CoinsRepository(new DummyCoinsChangerFactory());
+    private CoinsStorage coinsStorage = new CoinsStorage(new DummyCoinsChangerFactory());
 
     @Test
     public void shouldAddAllCoins() {
         //given
 
         //when
-        coinsRepository.addAll(coins(coin2(), coin5()));
+        coinsStorage.addAll(coins(coin2(), coin5()));
 
         //then
-        assertThat(coinsRepository.hasTheSameCoins(asList(coin2(), coin5()))).isTrue();
+        assertThat(coinsStorage.hasTheSameCoins(asList(coin2(), coin5()))).isTrue();
     }
 
     @Test
     public void shouldReleaseChangeInSimpleCase() throws Exception {
-        given(coinsRepository)
+        given(coinsStorage)
                 .contains(coin1())
                 .thenFor(new Money(1))
                 .expectReleasing(coin1());
@@ -47,7 +47,7 @@ public class CoinsRepositoryTest {
 
     @Test
     public void shouldReleaseChangeIfOneTypeOfCoinsAvailableOnly() throws Exception {
-        given(coinsRepository)
+        given(coinsStorage)
                 .contains(coin1(), coin1(), coin1())
                 .thenFor(new Money(2))
                 .expectReleasing(coin1(), coin1());
@@ -55,7 +55,7 @@ public class CoinsRepositoryTest {
 
     @Test
     public void shouldReleaseChangeIfManyTypesOfCoinsAvailable() throws Exception {
-        given(coinsRepository)
+        given(coinsStorage)
                 .contains(coin1(), coin2(), coin2(), coin5(), coin5())
                 .thenFor(new Money(9))
                 .expectReleasing(coin5(), coin2(), coin2());
@@ -63,7 +63,7 @@ public class CoinsRepositoryTest {
 
     @Test
     public void shouldReleaseChangeIfNothingExpected() throws Exception {
-        given(coinsRepository)
+        given(coinsStorage)
                 .contains()
                 .thenFor(new Money(0))
                 .expectReleasing();
@@ -71,7 +71,7 @@ public class CoinsRepositoryTest {
 
     @Test
     public void shouldReleaseChangeIfManyTypesOfCoinsAvailable2() throws Exception {
-        given(coinsRepository)
+        given(coinsStorage)
                 .contains(coin1(), coin2(), coin2(), coin2(), coin5(), coin5())
                 .thenFor(new Money(6))
                 .expectReleasing(coin5(), coin1());
@@ -79,7 +79,7 @@ public class CoinsRepositoryTest {
 
     @Test
     public void shouldThrowExceptionIfChangeCantBeReturned() {
-        given(coinsRepository)
+        given(coinsStorage)
                 .contains(coin1(), coin2())
                 .thenFor(new Money(6))
                 .expectException(new ChangeCannotBeReturnedException());
@@ -87,8 +87,8 @@ public class CoinsRepositoryTest {
 
 
 
-    private GivenCoinsRepository given(CoinsRepository coinsRepository) {
-        return new GivenCoinsRepository(coinsRepository);
+    private GivenCoinsRepository given(CoinsStorage coinsStorage) {
+        return new GivenCoinsRepository(coinsStorage);
     }
 
     private Coins coins(Coin ...coins) {
