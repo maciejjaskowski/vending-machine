@@ -29,7 +29,7 @@ public class CoinsStorage {
     }
 
 
-    public String accept(CoinsStorageVisitor coinsStorageVisitor) {
-        return coinsStorageVisitor.visitCoin(coins.toString());
+    public void accept(CoinsStorageVisitor coinsStorageVisitor) {
+        coinsStorageVisitor.visitCoin(coins.toString());
     }
 }

@@ -4,8 +4,8 @@ import jaskowski.vendingMachine.money.Money;
 import jaskowski.vendingMachine.money.Price;
 
 public class ImmediatelyReleasingCoinBag extends RegularCoinBag {
-    public ImmediatelyReleasingCoinBag(EnoughMoneyInserted enoughMoneyInserted) {
-        super(fakeDisplay(), new Transaction(alwaysEnoughMoney(), enoughMoneyInserted));
+    public ImmediatelyReleasingCoinBag(Transaction transaction) {
+        super(fakeDisplay(), new PendingTransaction(alwaysEnoughMoney(), transaction));
     }
 
     private static RemainsToPayDisplay fakeDisplay() {
@@ -15,8 +15,8 @@ public class ImmediatelyReleasingCoinBag extends RegularCoinBag {
         };
     }
 
-    private static IsEnoughMoney alwaysEnoughMoney() {
-        return new AbstractIsEnoughMoney() {
+    private static ExpectedMoney alwaysEnoughMoney() {
+        return new AbstractExpectedMoney() {
 
             @Override
             public Money lacks(Money sum) {

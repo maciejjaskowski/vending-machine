@@ -50,15 +50,15 @@ public class VendingMachine {
             display.productNotAvailable();
             return;
         }
-        coinBag = new RegularCoinBag(display, new Transaction(
-                new AbstractIsEnoughMoney() {
+        coinBag = new RegularCoinBag(display, new PendingTransaction(
+                new AbstractExpectedMoney() {
             @Override
             public Money lacks(Money money) {
                 return chosenSlot.howMuchMoreShouldBePaidThen(money);
             }
-        }, new EnoughMoneyInserted() {
+        }, new Transaction() {
             @Override
-            public void fire(Money moneyInserted) {
+            public void commit(Money moneyInserted) throws TransactionException {
                 try {
                     Money moneyToRelease = chosenSlot.overPaid(moneyInserted);
                     coinsStorage.releaseChange(moneyToRelease, coinsDispenser);
@@ -70,11 +70,17 @@ public class VendingMachine {
                     });
                     chosenSlot.releaseProduct(productDispenser);
                     display.productBought();
-                } catch (ChangeCannotBeReturnedException ignore) {
-                    coinBag.releaseCoins(coinsDispenser);
-                    display.cantChange();
+                    coinBag = createImmediatelyReleasingCoinBag();
+                } catch (ChangeCannotBeReturnedException e) {
+                    throw new TransactionException(e);
                 }
-                VendingMachine.this.coinBag = createImmediatelyReleasingCoinBag();
+            }
+
+            @Override
+            public void rollback() {
+                coinBag.releaseCoins(coinsDispenser);
+                display.cantChange();
+                coinBag = createImmediatelyReleasingCoinBag();
             }
         }));
     }
@@ -87,11 +93,16 @@ public class VendingMachine {
     }
 
     private ImmediatelyReleasingCoinBag createImmediatelyReleasingCoinBag() {
-        return new ImmediatelyReleasingCoinBag(new EnoughMoneyInserted() {
+        return new ImmediatelyReleasingCoinBag(new Transaction() {
             @Override
-            public void fire(Money moneyInserted) {
+            public void commit(Money moneyInserted) {
                 coinBag.releaseCoins(coinsDispenser);
                 display.chooseProduct();
+            }
+
+            @Override
+            public void rollback() {
+                throw new UnsupportedOperationException();
             }
         });
     }
@@ -100,8 +111,8 @@ public class VendingMachine {
         slotsStorage.accept(slotVisitor);
     }
 
-    public String accept(CoinsStorageVisitor coinsStorageVisitor) {
-        return coinsStorage.accept(coinsStorageVisitor);
+    public void accept(CoinsStorageVisitor coinsStorageVisitor) {
+        coinsStorage.accept(coinsStorageVisitor);
     }
 
 }

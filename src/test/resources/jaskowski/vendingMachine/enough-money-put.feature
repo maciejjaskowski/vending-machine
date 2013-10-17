@@ -1,7 +1,7 @@
 Feature: Enough money put
 
 
-  @problem
+
   Scenario: An exact amount of money is put
   	Given product with price 10 was chosen
     When coin 5 is put
@@ -23,6 +23,7 @@ Feature: Enough money put
     |  2   |
     And machine displays message "Product bought!"
 
+  @problem
   Scenario: Too much money put and change can't be returned
     Given machine contains no coins
     And product with price 7 was chosen

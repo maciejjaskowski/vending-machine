@@ -8,12 +8,12 @@ import jaskowski.vendingMachine.money.Price;
 public class RegularCoinBag implements CoinBag {
 
     private final RemainsToPayDisplay display;
-    private final Transaction transaction;
+    private final PendingTransaction pendingTransaction;
     private Coins coins;
 
-    public RegularCoinBag(RemainsToPayDisplay display, final Transaction transaction) {
+    public RegularCoinBag(RemainsToPayDisplay display, final PendingTransaction pendingTransaction) {
         this.display = display;
-        this.transaction = transaction;
+        this.pendingTransaction = pendingTransaction;
         this.coins = new Coins();
         display.remainsToPay(remainsToPay());
     }
@@ -22,7 +22,7 @@ public class RegularCoinBag implements CoinBag {
     public void putCoin(Coin coin) {
         coins.add(coin);
         display.remainsToPay(remainsToPay());
-        transaction.tryCommit(coins.sum());
+        pendingTransaction.tryCommit(coins.sum());
     }
 
     @Override
@@ -34,6 +34,6 @@ public class RegularCoinBag implements CoinBag {
 
 
     private Price remainsToPay() {
-        return transaction.lacks(coins.sum()).asPrice();
+        return pendingTransaction.lacks(coins.sum()).asPrice();
     }
 }

@@ -21,44 +21,44 @@ public class RegularCoinBagTest {
     @Mock
     private Display display;
     @Mock
-    private EnoughMoneyInserted enoughMoneyInserted;
+    private Transaction transaction;
     @Mock
     private CoinsDispenser coinsDispenser;
 
     @Test
-    public void shouldReleaseCoinsAsSoonAsEnoughMoneyIsPut() {
+    public void shouldReleaseCoinsAsSoonAsEnoughMoneyIsPut() throws Exception {
         //given
-        CoinBag coinBag = new RegularCoinBag(display, transaction(isEnoughMoney(5), enoughMoneyInserted));
+        CoinBag coinBag = new RegularCoinBag(display, transaction(isEnoughMoney(5), transaction));
 
         //when
         coinBag.putCoin(coin5());
 
         //then
-        verify(enoughMoneyInserted).fire(new Money(5));
+        verify(transaction).commit(new Money(5));
         verify(display).remainsToPay(new Price(0));
     }
 
     @Test
-    public void shouldReleaseCoinsNotSoonerThenWhenEnoughMoneyIsPut() {
+    public void shouldReleaseCoinsNotSoonerThenWhenEnoughMoneyIsPut() throws Exception {
         //given
-        CoinBag coinBag = new RegularCoinBag(display, transaction(isEnoughMoney(10), enoughMoneyInserted));
+        CoinBag coinBag = new RegularCoinBag(display, transaction(isEnoughMoney(10), transaction));
 
         //when
         coinBag.putCoin(coin5());
         coinBag.putCoin(coin5());
 
         //then
-        InOrder inOrder = inOrder(enoughMoneyInserted, display);
+        InOrder inOrder = inOrder(transaction, display);
         inOrder.verify(display).remainsToPay(new Price(10));
         inOrder.verify(display).remainsToPay(new Price(5));
         inOrder.verify(display).remainsToPay(new Price(0));
-        inOrder.verify(enoughMoneyInserted, times(1)).fire(new Money(10));
+        inOrder.verify(transaction, times(1)).commit(new Money(10));
     }
 
     @Test
-    public void shouldReleaseMoney() {
+    public void shouldReleaseMoney() throws Exception {
         //given
-        CoinBag coinBag = new RegularCoinBag(display, transaction(isEnoughMoney(7), enoughMoneyInserted));
+        CoinBag coinBag = new RegularCoinBag(display, transaction(isEnoughMoney(7), transaction));
 
 
         //when
@@ -71,29 +71,29 @@ public class RegularCoinBagTest {
         //then
 
 
-        InOrder inOrder = inOrder(coinsDispenser, enoughMoneyInserted, display);
+        InOrder inOrder = inOrder(coinsDispenser, transaction, display);
         inOrder.verify(display).remainsToPay(new Price(7));
         inOrder.verify(display).remainsToPay(new Price(2));
         inOrder.verify(coinsDispenser).release(new Coins(coin5()));
 
         inOrder.verify(display).remainsToPay(new Price(5));
         inOrder.verify(display).remainsToPay(new Price(0));
-        inOrder.verify(enoughMoneyInserted).fire(new Money(7));
+        inOrder.verify(transaction).commit(new Money(7));
 
     }
 
-    private Transaction transaction(final IsEnoughMoney isEnoughMoney, final EnoughMoneyInserted enoughMoneyInserted) {
-        return new Transaction(isEnoughMoney, enoughMoneyInserted);
+    private PendingTransaction transaction(final ExpectedMoney enoughMoney, final Transaction transaction) {
+        return new PendingTransaction(enoughMoney, transaction);
     }
 
-    private IsEnoughMoney isEnoughMoney(final int value) {
-        IsEnoughMoney isEnoughMoney = new AbstractIsEnoughMoney() {
+    private ExpectedMoney isEnoughMoney(final int value) {
+        ExpectedMoney enoughMoney = new AbstractExpectedMoney() {
             @Override
             public Money lacks(Money sum) {
                 return new Money(value).minus(sum);
             }
         };
 
-        return isEnoughMoney;
+        return enoughMoney;
     }
 }
